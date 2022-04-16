@@ -4,6 +4,9 @@
 PLAN9=$HOME/.guix-home/profile/plan9
 PATH=$PATH:$PLAN9/bin
 
+# 本地的一些脚本
+PATH=$HOME/bin:$PATH
+
 # 设置键盘速率
 xset r rate 200 60
 xset b off
@@ -21,6 +24,9 @@ XMODIFIERS=@im=fcitx
 GTK_IM_MODULE=fcitx
 QT_IM_MODULE=fcitx
 fcitx-autostart
+
+# 词典
+STARDICT_DATA_DIR=/data/dict/
 
 # plan9port font
 mkdir -p $HOME/.plan9port/font
