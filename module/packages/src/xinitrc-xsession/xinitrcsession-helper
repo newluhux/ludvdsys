@@ -1,0 +1,4 @@
+#!/bin/bash
+: "${XINITRC:=$HOME/.xinitrc}"
+chmod +x $XINITRC
+exec "${XINITRC}"
