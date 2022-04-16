@@ -29,13 +29,17 @@ fcitx-autostart
 STARDICT_DATA_DIR=/data/dict/
 
 # plan9port font
-mkdir -p $HOME/.plan9port/font
-font=$HOME/.plan9port/font/UnifontMedium/12a/font
-fontsrv -m $HOME/.plan9port/font &
+#fc-cache -rvf
+#mkdir -p $HOME/.plan9port/font
+#font=$HOME/.plan9port/font/UnifontMedium/12a/font
+#fontsrv -m $HOME/.plan9port/font &
 
 # like alias
 fn man { $PLAN9/bin/man $* }
-fn acme { $PLAN9/bin/acme -f $font $* }
+#fn acme { $PLAN9/bin/acme -f $font $* }
+
+# pager
+PAGE=cat
 
 # rio!
 rio -term '9term $PLAN9/bin/rc' -virtuals 12
