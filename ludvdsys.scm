@@ -1,10 +1,11 @@
 ;; 我的便携操作系统
 
 (use-modules (gnu) (guix gexp) (guix records))
-(use-package-modules busybox linux radio android)
-(use-service-modules base networking ssh sddm desktop dbus shepherd linux sound)
+(use-package-modules busybox linux radio android xorg xdisorg)
+(use-service-modules base networking ssh sddm desktop dbus shepherd linux sound xorg)
 
 (load "module/packages/plan9.scm")
+(load "module/packages/xorg.scm")
 
 (define-public ludvdsys-os
  (operating-system
@@ -32,8 +33,15 @@
      (comment "Administrator")
      (group "users")
      (supplementary-groups
-      (list "wheel" "audio" "video" "kvm" "input" "dialout" "lp" "netdev")))
+      (list "wheel" "audio" "video" "kvm" "input" "dialout" "lp" "netdev"
+            "adbusers")))
     %base-user-accounts))
+  (groups
+   (cons*
+    (user-group
+     (name "adbusers")
+     (system? #t))
+    %base-groups))
   ;; HOME的配置文件
   (skeletons 
    `((".xinitrc" ,(local-file "./data/skel/.xinitrc" "xinitrc"))
@@ -44,17 +52,18 @@
   (packages
    (cons*
     plan9port-with-ime
+    xinitrc-xsession-modify
     (map
      specification->package
      (list
       "nss-certs" ; 默认TLS证书
 
-      "busybox" ; 系统管理工具集
+      "busybox" ; 基础工具集
       "cryptsetup" ; 磁盘加密
       "zerofree" ; 清理磁盘
       "extundelete" "ddrescue" ; 文件恢复
       "btrfs-progs" "e2fsprogs" "xfsprogs" "f2fs-tools" ; 文件系统
-      "cdrtools" ; 光盘工具
+      "cdrtools" "udftools" ; 光盘工具
       "acpi" ; ACPI 工具
       "ncurses" ; 终端工具
       "picocom" ; 串口工具
@@ -63,6 +72,8 @@
       "hdparm" "sdparm" ; 磁盘工具
       "vmtouch" ; 文件缓存
       "psmisc" ; 进程管理
+      "cpupower" "powertop" ; 性能工具
+      "kmod" ; 内核模块工具
 
       "gzip" "bzip2" "xz" "zstd" "unzip" "p7zip" ; 压缩工具
       "cpio" "tar" ; 归档工具
@@ -82,6 +93,8 @@
       "fcitx" "dbus" ; 输入法
       "sdcv" ; 词典
 
+      "bvi" "hexedit" ; 编辑器
+
       "icecat" "ungoogled-chromium" ; WEB浏览器
       "w3m" "lynx" "links" ; 文本web浏览器
 
@@ -90,11 +103,13 @@
       "obs" "ffmpeg" ; 媒体录制工具
       "gimp" "imagemagick" "feh" "scrot" ; 图片工具
       "qrencode" ; 二维码
+      "asciinema" ; 终端录制
 
       "rtl-sdr" "gqrx" "dump1090" "qsstv" ; 无线电工具
 
       "openssh" "dropbear" "remmina" "freerdp" "tigervnc-client"
-      "tigervnc-server" "drawterm" "sshfs" "virt-manager" "tmate"; 远程访问
+      "tigervnc-server" "drawterm" "sshfs" "virt-manager" "tmate"
+      "mosh" "putty" ; 远程访问
 
       "sic" "ii" "irssi" ; irc 聊天
       "fdm" "msmtp" "mutt" ; 电子邮件
@@ -105,17 +120,30 @@
       "ethtool" "wol" ; 网络唤醒工具
       "nmap" "fping" ; 网络扫描工具
       "nftables" ; 防火墙工具
+      "macchanger" ; 更改MAC地址
+      "wireguard-tools" ; vpn
+      "tftp-hpa" "filezilla" ; 文件传输
+      "keepalived" ; VRRP
+      "darkhttpd" ; http 服务器
 
       "adb" "fastboot" ; 安卓手机工具
 
+      "exfatprogs" "fuse-exfat" "ntfs-3g" "wimlib" "wine" ; Microsoft Windows
+
+      "libreoffice" ; 办公
+
       "s9fes" "guile" ; Scheme Lisp
       "gcc-toolchain" "clang-toolchain" "glibc" ; Linux C Programming
+      "nasm" ; ASM
       "bison" "flex" ; 词法分析
       "make" "bmake" ; 构建工具
       "man-db" "texinfo" "man-pages" "sicp" ; 文档
       "strace" "ltrace" "gdb" ; 调试工具
+      "git" ; 版本管理
 
-      "xset" "xrdb" "xsetroot" "xterm" "xkbset"  ; Xorg 图形界面工具
+      "xset" "xrdb" "xsetroot" "xterm" "xkbset" "xclip" ; Xorg 图形界面工具
+
+      "curseofwar" "nethack" "tintin++" "cataclysm-dda" ; 游戏
       ))))
   (services
     (list
@@ -127,6 +155,9 @@
        (prefer-regexp "(^|/)(surf|chromium|icecat)$") ; 优先杀死的进程
        (avoid-regexp "(^|/)(sshd|shepherd|mcron|Xorg)$"))) ; 白名单，无论如何都不杀死
      (service openssh-service-type)
+     fontconfig-file-system-service ; font
+     (screen-locker-service xlockmore "xlock") ; 锁屏程序
+     (rngd-service) ; 随机数
      (service ntp-service-type ; ntp 网络校时
       (ntp-configuration
        (servers
