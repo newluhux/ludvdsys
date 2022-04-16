@@ -1,0 +1,35 @@
+# rc shell script for start rio session
+
+# plan9port
+PLAN9=$HOME/.guix-home/profile/plan9
+PATH=$PATH:$PLAN9/bin
+
+# 设置键盘速率
+xset r rate 200 60
+xset b off
+
+# 保护手指
+setxkbmap -layout us -option ctrl:nocaps
+
+# xterm设置
+xrdb $HOME/.Xdefaults
+
+# 输入法
+LANG=zh_CN.utf8
+LC_ALL=zh_CN.utf8
+XMODIFIERS=@im=fcitx
+GTK_IM_MODULE=fcitx
+QT_IM_MODULE=fcitx
+fcitx-autostart
+
+# plan9port font
+mkdir -p $HOME/.plan9port/font
+font=$HOME/.plan9port/font/UnifontMedium/12a/font
+fontsrv -m $HOME/.plan9port/font &
+
+# like alias
+fn man { $PLAN9/bin/man $* }
+fn acme { $PLAN9/bin/acme -f $font $* }
+
+# rio!
+rio -term '9term $PLAN9/bin/rc' -virtuals 12
