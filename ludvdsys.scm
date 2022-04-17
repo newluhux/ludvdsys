@@ -4,9 +4,6 @@
 (use-package-modules busybox linux radio android xorg xdisorg)
 (use-service-modules base networking ssh sddm desktop dbus shepherd linux sound xorg)
 
-(load "module/packages/plan9.scm")
-(load "module/packages/xorg.scm")
-
 (define-public ludvdsys-os
  (operating-system
   (host-name "ludvdsys")
@@ -32,6 +29,7 @@
      (name "admin")
      (comment "Administrator")
      (group "users")
+     (password (crypt "admin" "$1$pab"))
      (supplementary-groups
       (list "wheel" "audio" "video" "kvm" "input" "dialout" "lp" "netdev"
             "adbusers")))
@@ -42,21 +40,13 @@
      (name "adbusers")
      (system? #t))
     %base-groups))
-  ;; HOME的配置文件
-  (skeletons 
-   `((".xinitrc" ,(local-file "./data/skel/.xinitrc" "xinitrc"))
-     (".xinitrc.rc" ,(local-file "./data/skel/.xinitrc.rc" "xinitrc.rc"))
-     (".gitconfig" ,(local-file "./data/skel/.gitconfig" "gitconfig"))
-     (".Xdefaults" ,(local-file "./data/skel/.Xdefaults" "Xdefaults"))
-     (".uim" ,(local-file "./data/skel/.uim" "uim"))))
   (packages
-   (cons*
-    plan9port-with-ime
-    xinitrc-xsession-modify
     (map
      specification->package
      (list
       "nss-certs" ; 默认TLS证书
+  
+      "cwm" ; 窗口管理器
 
       "busybox" ; 基础工具集
       "cryptsetup" ; 磁盘加密
@@ -91,7 +81,7 @@
       "fcitx" "dbus" ; 输入法
       "sdcv" ; 词典
 
-      "bvi" "hexedit" ; 编辑器
+      "bvi" "hexedit" "nvi" ; 编辑器
 
       "icecat" "ungoogled-chromium" ; WEB浏览器
       "w3m" "lynx" "links" ; 文本web浏览器
@@ -139,7 +129,7 @@
       "xset" "xrdb" "xsetroot" "xterm" "xkbset" "xclip" ; Xorg 图形界面工具
 
       "curseofwar" "nethack" "tintin++" ; 游戏
-      ))))
+      )))
   (services
     (list
      (service earlyoom-service-type ; 杀死内存占用过多触发阀值的进程
@@ -147,7 +137,7 @@
        (minimum-available-memory 10) ; 运行内存阀值
        (minimum-free-swap 10) ; 交换空间阀值
        (memory-report-interval 5)
-       (prefer-regexp "(^|/)(surf|chromium|icecat)$") ; 优先杀死的进程
+       (prefer-regexp "(^|/)(chromium|icecat)$") ; 优先杀死的进程
        (avoid-regexp "(^|/)(sshd|shepherd|mcron|Xorg)$"))) ; 白名单，无论如何都不杀死
      (service openssh-service-type)
      fontconfig-file-system-service ; font
@@ -172,10 +162,7 @@
      (service sddm-service-type ; 图形界面登录管理器
       (sddm-configuration
        (display-server "x11")
-       (numlock "off") ; 笔记本不希望默认开机numlock
-       (auto-login-user "admin") ; 自动登录
-       (auto-login-session "xinitrc.desktop")
-       (relogin? #t)))
+       (numlock "off"))) ; 笔记本不希望默认开机numlock
      (syslog-service) ; 日志服务
      (service urandom-seed-service-type) ; 随机数
 
@@ -222,21 +209,6 @@
      ;; 脚本解释器
      (service special-files-service-type
       `(("/bin/sh" ,(file-append busybox "/bin/sh"))
-        ("/usr/bin/env" ,(file-append busybox "/bin/env"))))
-
-     ;; 源码
-     (extra-special-file "/src/ludvdsys.scm"
-      (local-file "./ludvdsys.scm"))
-     (extra-special-file "/src/module"
-      (local-file "./module"
-       #:recursive? #t))
-     (extra-special-file "/src/data"
-      (local-file "./data"
-       #:recursive? #t))
-
-     (extra-special-file ; 数据文件
-      "/data"
-      (local-file "./data"
-       #:recursive? #t))))))
+        ("/usr/bin/env" ,(file-append busybox "/bin/env"))))))))
 
 ludvdsys-os
