@@ -60,8 +60,6 @@
 
       "busybox" ; 基础工具集
       "cryptsetup" ; 磁盘加密
-      "zerofree" ; 清理磁盘
-      "extundelete" "ddrescue" ; 文件恢复
       "btrfs-progs" "e2fsprogs" "xfsprogs" "f2fs-tools" ; 文件系统
       "cdrtools" "udftools" ; 光盘工具
       "acpi" ; ACPI 工具
@@ -103,7 +101,6 @@
       "obs" "ffmpeg" ; 媒体录制工具
       "gimp" "imagemagick" "feh" "scrot" ; 图片工具
       "qrencode" ; 二维码
-      "asciinema" ; 终端录制
 
       "rtl-sdr" "gqrx" "dump1090" "qsstv" ; 无线电工具
 
@@ -128,9 +125,7 @@
 
       "adb" "fastboot" ; 安卓手机工具
 
-      "exfatprogs" "fuse-exfat" "ntfs-3g" "wimlib" "wine" ; Microsoft Windows
-
-      "libreoffice" ; 办公
+      "exfatprogs" "fuse-exfat" "ntfs-3g" "wimlib" ; Microsoft Windows
 
       "s9fes" "guile" ; Scheme Lisp
       "gcc-toolchain" "clang-toolchain" "glibc" ; Linux C Programming
@@ -143,7 +138,7 @@
 
       "xset" "xrdb" "xsetroot" "xterm" "xkbset" "xclip" ; Xorg 图形界面工具
 
-      "curseofwar" "nethack" "tintin++" "cataclysm-dda" ; 游戏
+      "curseofwar" "nethack" "tintin++" ; 游戏
       ))))
   (services
     (list
