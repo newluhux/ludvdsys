@@ -69,7 +69,7 @@
        "cpio" "tar" ; 归档工具
        "file" ; 文件类型识别
 
-       "libressl" "gnupg" "pinentry-tty" ;; 加密工具
+       "gnupg" "pinentry-tty" ;; 加密工具
 
        "rsync" "wget" "curl" "axel" "rtorrent" "amule" ; 下载工具
 
@@ -116,7 +116,7 @@
        "nftables" ; 防火墙工具
        "macchanger" ; 更改MAC地址
        "wireguard-tools" ; vpn
-       "tftp-hpa" "lftp" ; 文件传输
+       "lftp" ; 文件传输
        "keepalived" ; VRRP
        "darkhttpd" ; http 服务器
 
@@ -125,11 +125,11 @@
        "exfatprogs" "fuse-exfat" "ntfs-3g" "wimlib" ; Microsoft Windows
 
        "s9fes" "guile" ; Scheme Lisp
-       "gcc-toolchain" "clang-toolchain" "glibc" ; Linux C Programming
+       "gcc-toolchain" ; Linux C Programming
        "nasm" ; ASM
        "bison" "flex" ; 词法分析
        "make" "bmake" ; 构建工具
-       "man-db" "texinfo" "man-pages" "sicp" ; 文档
+       "man-db" "man-pages" "sicp" ; 文档
        "strace" "ltrace" "gdb" ; 调试工具
        "git" ; 版本管理
 
